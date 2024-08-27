@@ -1,0 +1,34 @@
+#!/bin/sh
+
+build()
+{
+  buildcache clang++ -o $1 -c $3 -MD -MF $2 main.cpp
+}
+
+build_direct()
+{
+  build main_direct.o main_direct.d
+}
+
+build_nondirect()
+{
+  build main_nondirect.o main_nondirect.d -Wall
+}
+
+echo "Clear buildcache first to see the effects of this issue"
+echo "It is tracked in https://gitlab.com/bits-n-bites/buildcache/-/issues/111"
+echo "NB First line of dependency files that follow should start with the .o file."
+
+echo "Generating dependency file in non-direct mode...1"
+BUILDCACHE_DIRECT_MODE=0 build_nondirect
+head -n1 main_nondirect.d
+echo "Generating dependency file in non-direct mode...2"
+BUILDCACHE_DIRECT_MODE=0 build_nondirect
+head -n1 main_nondirect.d
+
+echo "Generating dependency file in direct mode...1"
+BUILDCACHE_DIRECT_MODE=true build_direct
+head -n1 main_direct.d
+echo "Generating dependency file in direct mode...2"
+BUILDCACHE_DIRECT_MODE=true build_direct
+head -n1 main_direct.d

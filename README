@@ -1,0 +1,2 @@
+Install buildcache and clang++ onto $PATH.
+Run `./build`, it should be self-explanatory.
